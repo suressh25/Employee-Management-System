@@ -19,7 +19,9 @@ function EmployeeList() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/employees");
+        const response = await axios.get(
+          "https://employee-management-system-j68s.onrender.com/employees"
+        );
         setEmployees(response.data);
         setLoading(false);
       } catch (err) {
@@ -32,7 +34,9 @@ function EmployeeList() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/employees/${id}`);
+      await axios.delete(
+        `https://employee-management-system-j68s.onrender.com/employees/${id}`
+      );
       setEmployees(employees.filter((employee) => employee.employee_id !== id));
     } catch (err) {
       setError("Failed to delete employee.");
