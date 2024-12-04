@@ -27,7 +27,7 @@ function EmployeeForm() {
 
     try {
       const response = await axios.post(
-        "https://employee-management-system-j68s.onrender.com/employees",
+        "https://employee-management-system-j68s.onrender.com/api/employees",
         formData
       );
       setSuccess(response.data.message);

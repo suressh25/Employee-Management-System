@@ -20,7 +20,7 @@ function EmployeeList() {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(
-          "https://employee-management-system-j68s.onrender.com/employees"
+          "https://employee-management-system-j68s.onrender.com/api/employees"
         );
         setEmployees(response.data);
         setLoading(false);
@@ -35,7 +35,7 @@ function EmployeeList() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(
-        `https://employee-management-system-j68s.onrender.com/employees/${id}`
+        `https://employee-management-system-j68s.onrender.com/api/employees/${id}`
       );
       setEmployees(employees.filter((employee) => employee.employee_id !== id));
     } catch (err) {
