@@ -1,0 +1,28 @@
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: auto;
+}
+
+input,
+select,
+button {
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
