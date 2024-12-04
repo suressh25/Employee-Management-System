@@ -30,6 +30,7 @@ const LoginPage = () => {
       credentials.password === adminPassword
     ) {
       login(); // Update the authentication state
+      localStorage.setItem("isAdmin", "true"); // Set admin status in local storage
       navigate("/admin"); // Redirect to Employee List
     } else {
       setError("Invalid username or password");
