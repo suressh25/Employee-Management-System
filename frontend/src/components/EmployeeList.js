@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 import axios from "axios";
 
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editingEmployee, setEditingEmployee] = useState(null); // State for editing
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
 
-  // Check if user is admin
+  // Check if user is authenticated
   useEffect(() => {
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
-    if (!isAdmin) {
-      navigate("/"); // Redirect to login page
+    if (!isAuthenticated) {
+      logout(); // Call logout if not authenticated
+      navigate("/login"); // Redirect to login page
     }
-  }, [navigate]);
+  }, [isAuthenticated, logout, navigate]);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -38,9 +41,49 @@ function EmployeeList() {
       setError("Failed to delete employee.");
     }
   };
+
   const handleLogout = () => {
-    localStorage.removeItem("isAdmin"); // Clear session
-    navigate("/"); // Redirect to login page
+    logout(); // Use the logout function from AuthContext
+    navigate("/login"); // Redirect to login page
+  };
+
+  const handleEdit = (employee) => {
+    setEditingEmployee(employee); // Set the employee to be edited
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `http://localhost:5000/api/employees/${editingEmployee.employee_id}`,
+        editingEmployee
+      );
+      setEmployees(
+        employees.map((emp) =>
+          emp.employee_id === editingEmployee.employee_id
+            ? editingEmployee
+            : emp
+        )
+      );
+      setEditingEmployee(null); // Clear editing state
+    } catch (err) {
+      setError("Failed to update employee.");
+    }
+  };
+
+  const handleChange = (e) => {
+    setEditingEmployee({
+      ...editingEmployee,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   if (loading) return <p>Loading employees...</p>;
@@ -50,6 +93,62 @@ function EmployeeList() {
     <div>
       <h2>Employee List</h2>
       <button onClick={handleLogout}>Logout</button>
+      {editingEmployee && (
+        <form onSubmit={handleUpdate}>
+          <h3>Edit Employee</h3>
+          <input
+            type="text"
+            name="name"
+            value={editingEmployee.name}
+            onChange={handleChange}
+            placeholder="Name"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            value={editingEmployee.email}
+            onChange={handleChange}
+            placeholder="Email"
+            required
+          />
+          <input
+            type="text"
+            name="phone_number"
+            value={editingEmployee.phone_number}
+            onChange={handleChange}
+            placeholder="Phone Number"
+            required
+          />
+          <input
+            type="text"
+            name="department"
+            value={editingEmployee.department}
+            onChange={handleChange}
+            placeholder="Department"
+            required
+          />
+          <input
+            type="date"
+            name="date_of_joining"
+            value={editingEmployee.date_of_joining} // Ensure this retains the date value
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="role"
+            value={editingEmployee.role}
+            onChange={handleChange}
+            placeholder="Role"
+            required
+          />
+          <button type="submit">Update</button>
+          <button type="button" onClick={() => setEditingEmployee(null)}>
+            Cancel
+          </button>
+        </form>
+      )}
       <table border="1" style={{ width: "100%", textAlign: "left" }}>
         <thead>
           <tr>
@@ -71,14 +170,11 @@ function EmployeeList() {
               <td>{employee.email}</td>
               <td>{employee.phone_number}</td>
               <td>{employee.department}</td>
-              <td>{employee.date_of_joining}</td>
+              <td>{formatDate(employee.date_of_joining)}</td>{" "}
+              {/* Format the date here */}
               <td>{employee.role}</td>
               <td>
-                <button
-                  onClick={() => alert("Update functionality coming soon!")}
-                >
-                  Update
-                </button>
+                <button onClick={() => handleEdit(employee)}>Edit</button>
                 <button onClick={() => handleDelete(employee.employee_id)}>
                   Delete
                 </button>

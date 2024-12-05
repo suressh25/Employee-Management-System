@@ -9,7 +9,7 @@ const LoginPage = () => {
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
 
   const handleChange = (e) => {
     setCredentials({
@@ -30,7 +30,11 @@ const LoginPage = () => {
       credentials.password === adminPassword
     ) {
       login(); // Update the authentication state
-      navigate("/admin"); // Redirect to Employee List
+      setTimeout(() => {
+        console.log("Checking authentication state after login");
+        console.log("Is authenticated:", isAuthenticated);
+        navigate("/admin"); // Redirect to Employee List
+      }, 100); // Small delay to ensure state is updated
     } else {
       setError("Invalid username or password");
     }
